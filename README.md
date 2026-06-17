@@ -1,0 +1,1 @@
+# ruzickap-action-my-markdown-linter
