@@ -1,0 +1,38 @@
+name: Test markdown linting with custom config file
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create custom markdownlint config and markdown file
+        run: |
+          mkdir -p /tmp/md-config-test
+
+          # Create a permissive config that disables most rules
+          cat > /tmp/md-config-test/.markdownlint.yml << 'EOF'
+          ---
+          default: false
+          MD041: false
+          EOF
+
+          # Create a markdown file that would fail default rules but passes with custom config
+          cat > /tmp/md-config-test/test.md << 'EOF'
+          no heading at top
+
+          some content
+          EOF
+
+      - name: Run markdown linter with custom config
+        id: action
+        uses: .
+        with:
+          config_file: /tmp/md-config-test/.markdownlint.yml
+          fd_cmd_params: "/tmp/md-config-test -0 --extension md --type f"
+
+      - name: Assert linting passed with custom config
+        run: |
+          echo "Linting with custom config completed successfully"
+          echo "PASS"

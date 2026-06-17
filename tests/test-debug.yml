@@ -1,0 +1,35 @@
+name: Test markdown linting with debug mode
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create valid markdown file
+        run: |
+          mkdir -p /tmp/md-debug-test
+          cat > /tmp/md-debug-test/sample.md << 'EOF'
+          # Sample Document
+
+          This is a sample markdown file for debug mode testing.
+
+          ## Features
+
+          - Item one
+          - Item two
+          - Item three
+          EOF
+
+      - name: Run markdown linter with debug enabled
+        id: action
+        uses: .
+        with:
+          debug: "true"
+          fd_cmd_params: "/tmp/md-debug-test -0 --extension md --type f"
+
+      - name: Assert linting passed in debug mode
+        run: |
+          echo "Linting in debug mode completed successfully"
+          echo "PASS"

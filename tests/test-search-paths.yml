@@ -1,0 +1,19 @@
+name: Test markdown linting with search_paths
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run markdown linter with search_paths pointing to fixture docs
+        id: action
+        uses: .
+        with:
+          search_paths: pristine/ruzickap--action-my-markdown-linter/v1.0.10/tests/fixtures/docs
+
+      - name: Assert linting passed
+        run: |
+          echo "Linting with search_paths completed successfully"
+          echo "PASS"
