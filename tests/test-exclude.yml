@@ -1,0 +1,25 @@
+name: Test markdown linting with exclude
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run linter with exclude parameter
+        id: action
+        uses: .
+        with:
+          # Search the fixtures directory but exclude the 'exclude-me' subdirectory
+          # which contains a file with a very long line
+          search_paths: >-
+            ${{ github.workspace }}/pristine/ruzickap--action-my-markdown-linter/v1.2.0/tests/fixtures
+          exclude: exclude-me
+          config_file: >-
+            ${{ github.workspace }}/pristine/ruzickap--action-my-markdown-linter/v1.2.0/tests/fixtures/config/permissive.yml
+
+      - name: Assert linting with exclude succeeded
+        run: |
+          echo "Linting with exclude completed successfully"
+          echo "PASS"

@@ -1,0 +1,23 @@
+name: Test markdown linting with custom config
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run linter with permissive custom config
+        id: action
+        uses: .
+        with:
+          config_file: >-
+            ${{ github.workspace }}/pristine/ruzickap--action-my-markdown-linter/v1.2.0/tests/fixtures/config/permissive.yml
+          fd_cmd_params: >-
+            . ${{ github.workspace }}/pristine/ruzickap--action-my-markdown-linter/v1.2.0/tests/fixtures
+            -0 --extension md --type f --hidden --no-ignore --exclude .git/
+
+      - name: Assert linting with custom config succeeded
+        run: |
+          echo "Linting with custom config completed successfully"
+          echo "PASS"
