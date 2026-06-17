@@ -1,0 +1,20 @@
+name: Test debug mode
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run markdown linter with debug mode enabled
+        id: action
+        uses: .
+        with:
+          debug: "true"
+          search_paths: pristine/ruzickap--action-my-markdown-linter/v1.0.9/tests/fixtures
+
+      - name: Assert linting succeeded in debug mode
+        run: |
+          echo "Linting completed successfully in debug mode"
+          echo "PASS"
