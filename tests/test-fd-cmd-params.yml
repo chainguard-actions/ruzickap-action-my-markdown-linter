@@ -1,0 +1,31 @@
+name: Test markdown linting with custom fd command parameters
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create markdown files in a specific directory
+        run: |
+          mkdir -p /tmp/md-fd/subdir
+          cat > /tmp/md-fd/subdir/test.md << 'EOF'
+          # FD Params Test
+
+          This is a test markdown file for custom fd parameters.
+
+          ## Section
+
+          Some content here.
+          EOF
+
+      - name: Run markdown linter with custom fd command parameters
+        id: action
+        uses: .
+        with:
+          fd_cmd_params: "/tmp/md-fd -0 --extension md --type f --hidden --no-ignore --exclude .git/"
+
+      - name: Assert linting with custom fd params succeeded
+        run: |
+          echo "PASS: Markdown linting with custom fd command parameters completed successfully"

@@ -1,0 +1,37 @@
+name: Test markdown linting with custom config
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create markdown file and custom config
+        run: |
+          mkdir -p /tmp/md-custom
+          # Create a valid markdown file
+          cat > /tmp/md-custom/test.md << 'EOF'
+          # Title
+
+          This is a test markdown file with a very long line that would normally fail MD013 but we disable it in config.
+
+          ## Section
+
+          Content here.
+          EOF
+          # Create a custom config that disables MD013 (line length)
+          cat > /tmp/md-custom/.markdownlint.yml << 'EOF'
+          MD013: false
+          EOF
+
+      - name: Run markdown linter with custom config
+        id: action
+        uses: .
+        with:
+          config_file: /tmp/md-custom/.markdownlint.yml
+          search_paths: /tmp/md-custom
+
+      - name: Assert linting with custom config succeeded
+        run: |
+          echo "PASS: Markdown linting with custom config completed successfully"

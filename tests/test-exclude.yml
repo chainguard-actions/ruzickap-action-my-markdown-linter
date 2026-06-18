@@ -1,0 +1,32 @@
+name: Test markdown linting with exclude
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create markdown files including one that would fail linting
+        run: |
+          mkdir -p /tmp/md-exclude/good
+          mkdir -p /tmp/md-exclude/bad
+          # Create a valid markdown file in the good directory
+          cat > /tmp/md-exclude/good/valid.md << 'EOF'
+          # Good File
+
+          This is a valid markdown file.
+          EOF
+          # Create an invalid markdown file in the bad directory (missing blank line after heading)
+          printf '# Bad File\nNo blank line after heading - this would fail MD022\n' > /tmp/md-exclude/bad/invalid.md
+
+      - name: Run markdown linter excluding the bad directory
+        id: action
+        uses: .
+        with:
+          search_paths: /tmp/md-exclude
+          exclude: bad
+
+      - name: Assert linting with exclude succeeded
+        run: |
+          echo "PASS: Markdown linting with exclude completed successfully"
