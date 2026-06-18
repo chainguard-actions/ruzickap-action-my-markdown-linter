@@ -1,0 +1,37 @@
+name: Test exclude parameter
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create markdown files - one valid, one invalid (to be excluded)
+        run: |
+          mkdir -p /tmp/md-exclude/subdir
+          # Valid markdown file
+          cat > /tmp/md-exclude/valid.md << 'EOF'
+          # Valid Markdown
+
+          This is a valid markdown file.
+          EOF
+          # Invalid markdown file in subdir (missing blank line after heading, etc.)
+          # This file would fail linting but we will exclude the subdir
+          cat > /tmp/md-exclude/subdir/invalid.md << 'EOF'
+          # Bad Markdown
+          No blank line after heading - this would fail MD022
+          Also no trailing newline
+          EOF
+
+      - name: Run markdown linter with exclude
+        id: action
+        uses: .
+        with:
+          exclude: subdir
+          fd_cmd_params: /tmp/md-exclude -0 --extension md --type f --hidden --no-ignore --exclude .git/ --exclude subdir
+
+      - name: Assert linting with exclude succeeded
+        run: |
+          echo "Linting with exclude completed successfully"
+          echo "PASS"

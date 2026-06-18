@@ -1,0 +1,22 @@
+name: Test linting repo markdown files
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run markdown linter on action's own README
+        id: action
+        uses: .
+        with:
+          config_file: ${{ github.workspace }}/pristine/ruzickap--action-my-markdown-linter/v1.1.0/.markdownlint.yml
+          fd_cmd_params: >-
+            ${{ github.workspace }}/pristine/ruzickap--action-my-markdown-linter/v1.1.0/README.md
+            -0 --extension md --type f --hidden --no-ignore --exclude .git/
+
+      - name: Assert linting of repo markdown succeeded
+        run: |
+          echo "Linting of repo markdown files completed successfully"
+          echo "PASS"

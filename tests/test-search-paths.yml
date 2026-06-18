@@ -1,0 +1,28 @@
+name: Test search_paths input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create test markdown directory and file
+        run: |
+          mkdir -p /tmp/md-test-dir
+          cat > /tmp/md-test-dir/test.md << 'EOF'
+          # Test Markdown File
+
+          This is a test markdown file for linting.
+
+          ## Section
+
+          Some content here.
+          EOF
+      - id: action
+        uses: .
+        with:
+          search_paths: /tmp/md-test-dir
+      - name: Assert action succeeded
+        run: |
+          echo "Action completed successfully with search_paths input"
+          echo "PASS"
