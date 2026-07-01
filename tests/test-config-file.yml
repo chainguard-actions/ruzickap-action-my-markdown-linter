@@ -1,0 +1,20 @@
+name: Test custom config file
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Lint markdown files with permissive config
+        id: action
+        uses: .
+        with:
+          config_file: pristine/ruzickap--action-my-markdown-linter/v1.3.1/tests/fixtures/config/.markdownlint.yml
+          search_paths: |
+            pristine/ruzickap--action-my-markdown-linter/v1.3.1/tests/fixtures/invalid/
+
+      - name: Assert linting passed with permissive config
+        run: |
+          echo "PASS: Markdown linting completed successfully with permissive config"
