@@ -1,0 +1,52 @@
+name: tests
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - tests/**
+      - .github/workflows/tests.yml
+      - entrypoint.sh
+      - Dockerfile
+      - .dockerignore
+  push:
+    branches:
+      - main
+    paths:
+      - tests/**
+      - .github/workflows/tests.yml
+      - entrypoint.sh
+      - Dockerfile
+      - .dockerignore
+
+permissions: read-all
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Test 1 - Check done in tests/test2 - tests/test2/normal.md
+        uses: ./
+        with:
+          debug: true
+          search_paths: tests/test2
+
+      - name: Test 2 - Check with "exclude" and "search_paths" - tests/test2/normal.md
+        uses: ./
+        with:
+          debug: true
+          exclude: |
+            CHANGELOG.md
+            test1/excluded_file.md
+            bad.md
+            excluded_dir/
+          search_paths: tests/
+
+      - name: Test 3 - Check with "fd_cmd_params" - tests/test2/normal.md
+        uses: ./
+        with:
+          fd_cmd_params: ". -0 --extension md --type f --hidden --no-ignore --exclude CHANGELOG.md --exclude test1/excluded_file.md --exclude bad.md --exclude excluded_dir/ tests/"

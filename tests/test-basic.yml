@@ -1,4 +1,4 @@
-name: Test basic markdown linting
+name: Test basic usage - lint valid markdown files
 on:
   workflow_dispatch:
 jobs:
@@ -6,14 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Lint valid markdown files
+      - name: Run markdown linter on valid files
         id: action
         uses: .
         with:
-          search_paths: |
-            pristine/ruzickap--action-my-markdown-linter/v1.3.1/tests/fixtures/valid/
-
+          search_paths: tests/fixtures/valid
       - name: Assert linting passed
         run: |
-          echo "PASS: Markdown linting completed successfully for valid files"
+          echo "PASS: markdown linter completed successfully on valid files"

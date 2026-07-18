@@ -1,0 +1,40 @@
+---
+# GitHub Actions workflow for Docker image building and testing
+# Builds Docker image when Dockerfile or related files are modified
+# https://docs.docker.com/
+name: docker-image
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - .dockerignore
+      - .github/workflows/docker-image.yml
+      - Dockerfile
+      - entrypoint.sh
+  push:
+    branches:
+      - main
+    paths:
+      - .dockerignore
+      - .github/workflows/docker-image.yml
+      - Dockerfile
+      - entrypoint.sh
+
+permissions: read-all
+
+jobs:
+  docker-image:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Build test
+        run: docker build . --file Dockerfile

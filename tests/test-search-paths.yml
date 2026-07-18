@@ -1,4 +1,4 @@
-name: Test debug mode
+name: Test search_paths input
 on:
   workflow_dispatch:
 jobs:
@@ -6,12 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Run markdown linter with debug enabled
+      - name: Run markdown linter on specific search path
         id: action
         uses: .
         with:
-          debug: "true"
           search_paths: tests/fixtures/valid
-      - name: Assert linting passed in debug mode
+      - name: Assert linting passed on specific path
         run: |
-          echo "PASS: markdown linter completed successfully in debug mode"
+          echo "PASS: markdown linter completed successfully on specific search path"

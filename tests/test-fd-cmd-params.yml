@@ -1,4 +1,4 @@
-name: Test fd_cmd_params parameter
+name: Test fd_cmd_params input
 on:
   workflow_dispatch:
 jobs:
@@ -6,15 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Lint markdown files using custom fd command parameters
+      - name: Run markdown linter with custom fd command params
         id: action
         uses: .
         with:
-          fd_cmd_params: >-
-            pristine/ruzickap--action-my-markdown-linter/v1.3.1/tests/fixtures/valid
-            -0 --extension md --type f --hidden --no-ignore --exclude .git/
-
+          fd_cmd_params: ". -0 --extension md --type f --hidden --no-ignore --exclude .git/ tests/fixtures/valid"
       - name: Assert linting passed with custom fd params
         run: |
-          echo "PASS: Markdown linting completed successfully with custom fd command parameters"
+          echo "PASS: markdown linter completed successfully with custom fd_cmd_params"

@@ -1,4 +1,4 @@
-name: Test exclude parameter
+name: Test exclude input
 on:
   workflow_dispatch:
 jobs:
@@ -6,16 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Lint markdown files excluding invalid directory
+      - name: Run markdown linter excluding invalid directory
         id: action
         uses: .
         with:
-          search_paths: |
-            pristine/ruzickap--action-my-markdown-linter/v1.3.1/tests/fixtures/
-          exclude: |
-            invalid
-
-      - name: Assert linting passed with exclusions
+          exclude: invalid
+          search_paths: tests/fixtures
+      - name: Assert linting passed after exclusion
         run: |
-          echo "PASS: Markdown linting completed successfully with invalid directory excluded"
+          echo "PASS: markdown linter completed successfully with exclusion"

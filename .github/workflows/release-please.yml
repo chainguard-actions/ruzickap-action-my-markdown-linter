@@ -1,0 +1,57 @@
+---
+# GitHub Actions workflow for automated release management
+# Creates release PRs and GitHub releases when changes are pushed to main
+# https://github.com/googleapis/release-please
+name: release-please
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: release
+        with:
+          release-type: simple
+
+      - name: Checkout repository
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Tag major and minor versions
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          MAJOR: ${{ steps.release.outputs.major }}
+          MINOR: ${{ steps.release.outputs.minor }}
+        run: |
+          set -euxo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Get the current commit SHA
+          SHA=$(git rev-parse HEAD)
+
+          echo "🏷️ Tag commit: ${SHA}"
+          echo "🔍 Major: ${MAJOR}"
+          echo "🔍 Minor: ${MINOR}"
+          echo "🚀 Release tag: v${MAJOR}.${MINOR}"
+
+          git tag -f "v${MAJOR}" "${SHA}"
+          git tag -f "v${MAJOR}.${MINOR}" "${SHA}"
+
+          # Push tags to remote
+          git push --force origin "v${MAJOR}"
+          git push --force origin "v${MAJOR}.${MINOR}"

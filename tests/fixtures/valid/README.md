@@ -1,6 +1,6 @@
-# Valid Markdown File
+# Valid Markdown
 
-This is a valid markdown file for testing purposes.
+This is a valid markdown file used for testing.
 
 ## Section One
 
