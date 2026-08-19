@@ -1,0 +1,26 @@
+name: Test invalid markdown - linter should fail on bad files
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run markdown linter on invalid files (expect failure)
+        id: action
+        uses: .
+        with:
+          search_paths: ${{ github.workspace }}/tests/fixtures/invalid/docs
+        continue-on-error: true
+
+      - name: Assert linter failed on invalid markdown
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected linter to fail on invalid markdown, but got outcome: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: linter correctly failed on invalid markdown"
