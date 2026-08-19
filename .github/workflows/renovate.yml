@@ -1,0 +1,69 @@
+name: Renovate
+
+on:
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        type: boolean
+        description: "Dry-Run"
+        required: false
+        default: false
+      logLevel:
+        type: choice
+        description: "Log-Level"
+        default: "debug"
+        options:
+          - info
+          - debug
+          - trace
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/renovate.json5"
+  schedule:
+    - cron: "0 0,2,4 * * 0"
+
+permissions:
+  contents: read
+
+env:
+  LOG_LEVEL: debug
+  RENOVATE_CONFIG_FILE: .github/renovate.json5
+  RENOVATE_DRY_RUN: false
+  RENOVATE_REPOSITORIES: ${{ github.repository }}
+  RENOVATE_USERNAME: ${{ github.repository_owner }}
+  RENOVATE_GIT_AUTHOR: "Renovate Bot <bot@renovateapp.com>"
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: renovate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Generate Token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
+        id: generate-token
+        with:
+          app_id: ${{ secrets.MY_RENOVATE_GITHUB_APP_ID }}
+          private_key: "${{ secrets.MY_RENOVATE_GITHUB_PRIVATE_KEY }}"
+
+      - name: Override default config from dispatch variables
+        env:
+          INPUT_DRY_RUN: ${{ github.event.inputs.dryRun || env.RENOVATE_DRY_RUN }}
+          INPUT_LOG_LEVEL: ${{ github.event.inputs.logLevel || env.LOG_LEVEL }}
+        run: |
+          safe_dry_run=$(printf '%s' "$INPUT_DRY_RUN" | tr -d '\n\r')
+          safe_log_level=$(printf '%s' "$INPUT_LOG_LEVEL" | tr -d '\n\r')
+          echo "RENOVATE_DRY_RUN=${safe_dry_run}" | tee -a "${GITHUB_ENV}"
+          echo "LOG_LEVEL=${safe_log_level}" | tee -a "${GITHUB_ENV}"
+          echo "RENOVATE_BASE_BRANCHES=${GITHUB_REF##*/}" | tee -a "${GITHUB_ENV}"
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@5c6c06aa0e3d7a6a9b6cba05c078c51631b5f11a # v39.1.1
+        with:
+          configurationFile: "${{ env.RENOVATE_CONFIG_FILE }}"
+          token: "x-access-token:${{ steps.generate-token.outputs.token }}"

@@ -1,0 +1,43 @@
+name: docker-image
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - .hadolint.yaml
+      - entrypoint.sh
+      - .github/workflows/docker-image.yml
+  push:
+    branches:
+      - main
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - .hadolint.yaml
+      - entrypoint.sh
+      - .github/workflows/docker-image.yml
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Build test
+        run: docker build . --file Dockerfile
+
+  hadolint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: hadolint
+        uses: burdzwastaken/hadolint-action@13e3263a6ac6ad7f5830e6852a1491b7f3d4801a # master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HADOLINT_ACTION_DOCKERFILE_FOLDER: .

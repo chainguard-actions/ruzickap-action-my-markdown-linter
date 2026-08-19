@@ -1,0 +1,4 @@
+---
+# Disable blank lines around headings rule for testing
+MD022: false
+MD041: false

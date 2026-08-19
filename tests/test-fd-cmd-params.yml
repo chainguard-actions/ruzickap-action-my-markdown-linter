@@ -1,4 +1,4 @@
-name: Test debug mode - enable verbose output
+name: Test fd_cmd_params - custom fd command parameters
 on:
   workflow_dispatch:
 jobs:
@@ -18,8 +18,9 @@ jobs:
       - id: action
         uses: .
         with:
-          debug: "true"
-          search_paths: tests/fixtures/valid
-      - name: Assert action succeeded in debug mode
+          # Use fd_cmd_params to only scan the valid fixtures directory
+          # When fd_cmd_params is set, exclude and search_paths are ignored
+          fd_cmd_params: tests/fixtures/valid -0 --extension md --type f --hidden --no-ignore --exclude .git/
+      - name: Assert action succeeded with custom fd params
         run: |
-          echo "PASS: action completed successfully in debug mode"
+          echo "PASS: action completed successfully with custom fd_cmd_params"
