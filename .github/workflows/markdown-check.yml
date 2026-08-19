@@ -1,0 +1,38 @@
+---
+name: markdown-check
+
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - "**.md"
+      - .github/workflows/markdown-check.yml
+      - .markdownlint.yml
+
+permissions: read-all
+
+jobs:
+  markdownlint-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+
+      - name: Markdown Lint
+        uses: ruzickap/action-my-markdown-linter@919d3735df9bbc094d206521a774133ec8f3c4ca # v1.1.0
+        with:
+          exclude: |
+            tests/
+            CHANGELOG.md
+
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+
+      - name: Link Checker
+        uses: ruzickap/action-my-markdown-link-checker@1126c6a5c31df989b4f3b1a8072ad125887b4c47 # v1.3.0
+        with:
+          exclude: |
+            tests/
+            CHANGELOG.md

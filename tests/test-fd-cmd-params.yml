@@ -1,0 +1,19 @@
+name: Test fd_cmd_params custom parameters
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: action
+        uses: .
+        with:
+          # Use fd_cmd_params to only scan the docs subdirectory (valid files only)
+          # vendor subdirectory has invalid files but is not included
+          fd_cmd_params: tests/fixtures/mixed/docs -0 --extension md --type f --hidden --no-ignore --exclude .git/
+
+      - name: Assert action succeeded with custom fd params
+        run: |
+          echo "PASS: action completed successfully with custom fd_cmd_params (only docs scanned)"
