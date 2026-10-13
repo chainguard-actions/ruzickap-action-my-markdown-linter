@@ -14,6 +14,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v1.2.0 | [`v1.2.0`](https://github.com/chainguard-actions/ruzickap-action-my-markdown-linter/tree/v1.2.0) | [`26b4129`](https://github.com/ruzickap/action-my-markdown-linter/commit/26b4129bf0352527e60b5bd739357af63df1b7bf) |
 | v1.3.0 | [`v1.3.0`](https://github.com/chainguard-actions/ruzickap-action-my-markdown-linter/tree/v1.3.0) | [`5e4b49f`](https://github.com/ruzickap/action-my-markdown-linter/commit/5e4b49fb65d856a021b96ad7f799cc3bde9af91e) |
 | v1.3.1 | [`v1.3.1`](https://github.com/chainguard-actions/ruzickap-action-my-markdown-linter/tree/v1.3.1) | [`abb659d`](https://github.com/ruzickap/action-my-markdown-linter/commit/abb659d26eea70aee77a555bd057b9c45ddd3332) |
+| v1.3.2 | [`v1.3.2`](https://github.com/chainguard-actions/ruzickap-action-my-markdown-linter/tree/v1.3.2) | [`6b1272b`](https://github.com/ruzickap/action-my-markdown-linter/commit/6b1272bac58aa0df35a19ed176000e67350d7cf8) |
 
 ## Privacy
 
