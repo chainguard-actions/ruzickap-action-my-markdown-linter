@@ -1,0 +1,36 @@
+name: Test exclude - skip bad markdown files
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create mixed markdown files (one valid, one invalid)
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/tests/fixtures/mixed-md"
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/mixed-md/good.md" << 'EOF'
+          # Good File
+
+          This is a valid markdown file.
+          EOF
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/mixed-md/bad.md" << 'EOF'
+          # First Heading
+
+          Some content.
+
+          # Second Heading
+
+          More content.
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          search_paths: tests/fixtures/mixed-md
+          exclude: bad.md
+
+      - name: Assert linting passed (bad file was excluded)
+        run: |
+          echo "PASS: markdownlint completed successfully with bad.md excluded"

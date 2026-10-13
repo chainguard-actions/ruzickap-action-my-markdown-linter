@@ -1,0 +1,27 @@
+name: Test debug mode
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create valid markdown file for debug test
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/tests/fixtures/debug-md"
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/debug-md/readme.md" << 'EOF'
+          # Debug Test
+
+          This is a valid markdown file used to test debug mode.
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          search_paths: tests/fixtures/debug-md
+          debug: "true"
+
+      - name: Assert linting passed in debug mode
+        run: |
+          echo "PASS: markdownlint completed successfully in debug mode"

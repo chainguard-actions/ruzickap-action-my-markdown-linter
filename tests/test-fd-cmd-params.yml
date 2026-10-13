@@ -1,0 +1,37 @@
+name: Test fd_cmd_params - custom fd command parameters
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create markdown files in specific subdirectory
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/tests/fixtures/fd-params/subdir"
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/fd-params/subdir/valid.md" << 'EOF'
+          # Valid Markdown
+
+          This file is in a subdirectory and is valid.
+          EOF
+          # Also create a bad file at the root level that should NOT be picked up
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/fd-params/bad.md" << 'EOF'
+          # First Heading
+
+          Some content.
+
+          # Second Heading
+
+          More content.
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          # Use fd_cmd_params to only scan the subdir (ignoring bad.md at root)
+          fd_cmd_params: tests/fixtures/fd-params/subdir -0 --extension md --type f --hidden --no-ignore --exclude .git/
+
+      - name: Assert linting passed using custom fd params
+        run: |
+          echo "PASS: markdownlint completed successfully with custom fd_cmd_params targeting only subdir"

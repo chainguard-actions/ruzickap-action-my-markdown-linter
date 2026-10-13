@@ -1,0 +1,38 @@
+name: Test config_file - custom markdownlint config
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create markdown file and custom config that disables MD025
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/tests/fixtures/config-test"
+          # This file has multiple H1 headings (violates MD025 by default)
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/config-test/multi-h1.md" << 'EOF'
+          # First Heading
+
+          Some content.
+
+          # Second Heading
+
+          More content.
+          EOF
+          # Config that disables MD025 (multiple top-level headings)
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/config-test/.markdownlint.json" << 'EOF'
+          {
+            "MD025": false
+          }
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          search_paths: tests/fixtures/config-test
+          config_file: tests/fixtures/config-test/.markdownlint.json
+
+      - name: Assert linting passed with custom config
+        run: |
+          echo "PASS: markdownlint completed successfully with custom config disabling MD025"

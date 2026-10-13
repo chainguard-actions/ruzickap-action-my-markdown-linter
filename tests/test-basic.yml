@@ -1,0 +1,30 @@
+name: Test basic usage - valid markdown
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create valid markdown files for linting
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/tests/fixtures/valid-md"
+          cat > "$GITHUB_WORKSPACE/tests/fixtures/valid-md/hello.md" << 'EOF'
+          # Hello World
+
+          This is a valid markdown file.
+
+          ## Section Two
+
+          Some content here.
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          search_paths: tests/fixtures/valid-md
+
+      - name: Assert linting passed
+        run: |
+          echo "PASS: markdownlint completed successfully on valid markdown"
