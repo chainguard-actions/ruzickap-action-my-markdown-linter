@@ -1,0 +1,13 @@
+{
+  "name": "action-my-markdown-linter",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "markdownlint-cli": "0.50.0"
+  },
+  "overrides": {
+    "katex": "0.19.1",
+    "minimatch": "11.0.8",
+    "re2js": "2.10.0"
+  }
+}

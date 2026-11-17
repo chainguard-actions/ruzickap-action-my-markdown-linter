@@ -1,0 +1,29 @@
+name: Test invalid markdown fails
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create invalid markdown
+        run: |
+          rm -rf md-invalid
+          mkdir -p md-invalid
+          printf '# Title\n\n\n\nTrailing spaces here   \n# No blank line around heading\ntext\n' > md-invalid/bad.md
+          chmod -R a+rX md-invalid
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          search_paths: md-invalid
+      - name: Assert lint failed
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected failure for invalid markdown"
+            exit 1
+          fi
+          echo "PASS"

@@ -1,0 +1,30 @@
+name: Test basic valid markdown passes
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create valid markdown
+        run: |
+          rm -rf md-valid
+          mkdir -p md-valid/sub
+          printf '# Valid Title\n\nSome valid text.\n\n## Section\n\n- item one\n- item two\n' > md-valid/README.md
+          printf '# Another Doc\n\nMore valid text here.\n' > md-valid/sub/doc.md
+          chmod -R a+rX md-valid
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          search_paths: md-valid
+      - name: Assert lint succeeded
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected success for valid markdown"
+            exit 1
+          fi
+          echo "PASS"

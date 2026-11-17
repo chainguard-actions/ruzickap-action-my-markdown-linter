@@ -1,0 +1,32 @@
+name: Test custom fd_cmd_params
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create markdown files
+        run: |
+          rm -rf md-fd
+          mkdir -p md-fd/good md-fd/bad
+          printf '# Good Doc\n\nValid text.\n' > md-fd/good/good.md
+          printf '# Title\n\n\n\nTrailing spaces   \n' > md-fd/bad/bad.md
+          chmod -R a+rX md-fd
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          fd_cmd_params: ". md-fd/good --extension md --type f"
+          # These are ignored when fd_cmd_params is set
+          search_paths: md-fd
+      - name: Assert lint succeeded using only fd_cmd_params
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected success; fd_cmd_params should limit search to md-fd/good"
+            exit 1
+          fi
+          echo "PASS"

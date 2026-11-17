@@ -1,0 +1,32 @@
+name: Test exclude skips bad files
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create markdown with an excluded bad directory
+        run: |
+          rm -rf md-exclude
+          mkdir -p md-exclude/excluded_dir
+          printf '# Good Doc\n\nValid text.\n' > md-exclude/good.md
+          printf '# Title\n\n\n\nTrailing spaces here   \n# Bad heading\ntext\n' > md-exclude/excluded_dir/bad.md
+          printf '# Title\n\n\n\nTrailing   \n' > md-exclude/skipme.md
+          chmod -R a+rX md-exclude
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          search_paths: md-exclude
+          exclude: "excluded_dir/ skipme.md"
+      - name: Assert lint succeeded with exclusions
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected success when bad files are excluded"
+            exit 1
+          fi
+          echo "PASS"
